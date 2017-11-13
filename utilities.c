@@ -13,9 +13,10 @@ void argc_verify_s(int amount) {
 	}
 }
 
+// Se abre el archivo a usar como bitacora en modo append
 FILE *output_ready(char* f_name){
 
-	if ((output_file = fopen(f_name, "w")) == NULL) {
+	if ((output_file = fopen(f_name, "a")) == NULL) {
 		printf("%s %s\n",FILE_OPEN_FAIL, f_name);
 		exit(1);
 	}
