@@ -10,6 +10,8 @@
 
 int main(int argc , char *argv[])
 {
+
+
     int sock;
     struct sockaddr_in server;
     char message[BUFSIZE] , server_reply[BUFSIZE];
@@ -25,7 +27,7 @@ int main(int argc , char *argv[])
 
     server.sin_addr.s_addr = inet_addr("127.0.0.1");
     server.sin_family = AF_INET;
-    server.sin_port = htons( 6021 );
+    server.sin_port = htons( 6030 );
 
     //Connect to remote server
     if (connect(sock , (struct sockaddr *)&server , sizeof(server)) < 0){
