@@ -1,17 +1,19 @@
 /*
     C socket server example
 */
-#include <sys/socket.h> 
+#include <sys/socket.h>
 #include "utilities.h"
- 
+
 int main(int argc , char *argv[]){
 
     argc_verify_s(argc);
-
+    // Se previene la interrupcion CTRL+C
+    signal(SIGINT, sigintHandler);
     // Se definen las variables para ser capturadas como argumentos
     int port_number;
     output_file = NULL;
     f_name = NULL;
+    ending_server=false;
 
     int value;
     // Se capturan los argumentos
@@ -62,46 +64,54 @@ int main(int argc , char *argv[]){
         //print the error message
         perror("bind failed. Error");
         return 1;
-    }    
+    }
 
     //Listen
-    listen(socket_desc , 3);    
+    listen(socket_desc , 3);
 
     //Accept and incoming connection
     puts("Waiting for incoming connections...");
-    c = sizeof(struct sockaddr_in);    
+    c = sizeof(struct sockaddr_in);
 
 
     printf("Puerto %d\n", port_number);
-    printf("Nombre %s\n", f_name);    
+    printf("Nombre %s\n", f_name);
 
     //accept connection from an incoming client (aqui es donde sucede la magia con el cliente)
     if ((client_sock = accept(socket_desc, (struct sockaddr *)&client, (socklen_t*)&c)) < 0){
         perror("accept failed");
-        return 1;        
+        return 1;
     }
 
     puts("Connection accepted");
-     
+
     //Receive a message from client
     i=1;
     while((read_size = recv(client_sock, report_message, BUFSIZE, 0)) > 0){
-        //Send the message back to client
-        write(client_sock, "200\0", strlen("200\0"));
-        //printf("Received from %d\n",client_sock);
-        fflush(stdout);
-        printf("%s\n",report_message );
-        fprintf(output_file, "Aqui deberia salir un mensaje %s\n" ,report_message);
-        memset(report_message,'\0',BUFSIZE);
-        i++;
+
+      if (ending_server) {
+        break;
+      }
+      //Send the message back to client
+      write(client_sock, "200\0", strlen("200\0"));
+      //printf("Received from %d\n",client_sock);
+      fflush(stdout);
+
+      fprintf(output_file,"%s\n" ,report_message);
+      memset(report_message,'\0',BUFSIZE);
+      ++i;
     }
-     
+
+    if (fclose(output_file) != 0){
+      perror("Error al cerrar el archivo");
+    }
+
     if(read_size == 0){
         puts("Client disconnected");
         fflush(stdout);
     } else if(read_size == -1){
         perror("recv failed");
     }
-     
+
     return 0;
 }

@@ -24,3 +24,16 @@ FILE *output_ready(char* f_name){
 		return output_file;
 	}
 }
+
+// Manejador de señales para evitar el cierre del programa
+void sigintHandler(int sig_num){
+    signal(sig_num, sigintHandler);
+		char option;
+    printf("\n Deseas finalizar el programa? [s/n]");
+		fflush(stdout);
+		scanf("%c\n", &option );
+    if (option=='s'){
+			ending_server = true;
+		}
+
+}

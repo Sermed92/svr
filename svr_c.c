@@ -7,7 +7,7 @@
 #include <arpa/inet.h> //inet_addr
 
 #include "utilities.h"
- 
+
 int main(int argc , char *argv[])
 {
     int sock;
@@ -16,37 +16,37 @@ int main(int argc , char *argv[])
 
     memset(message,'\0', BUFSIZE);
     memset(server_reply,'\0', BUFSIZE);
-     
+
     //Create socket
     if ((sock = socket(AF_INET , SOCK_STREAM , 0)) == -1){
         printf("Could not create socket");
     }
     puts("Socket created");
-     
+
     server.sin_addr.s_addr = inet_addr("127.0.0.1");
     server.sin_family = AF_INET;
-    server.sin_port = htons( 6018 );
- 
+    server.sin_port = htons( 6021 );
+
     //Connect to remote server
     if (connect(sock , (struct sockaddr *)&server , sizeof(server)) < 0){
         perror("connect failed. Error");
         return 1;
     }
-     
+
     puts("Connected\n");
-     
+
     //keep communicating with server
     while(1){
         printf("Enter message : ");
         fgets(message, BUFSIZE, stdin);
-         
+
         //Send some data
         if( send(sock, message, BUFSIZE, 0) < 0){
             puts("Send failed");
             return 1;
         }
         memset(message,'\0', BUFSIZE);
-         
+
         //Receive a reply from the server
         if( recv(sock, server_reply, BUFSIZE, 0) < 0){
             puts("recv failed");
@@ -56,7 +56,7 @@ int main(int argc , char *argv[])
         puts(server_reply);
         memset(server_reply,'\0', BUFSIZE);
     }
-     
+
     close(sock);
     return 0;
 }
