@@ -22,19 +22,42 @@ FILE *output_ready(char* f_name){
 	}
 	else {
 		//printf("Salida: %s\n", arr[opts]);
+		fprintf(output_file, "\n\n\n------------Nueva bitacora------------\n");
 		return output_file;
 	}
 }
 
 // Manejador de señales para evitar el cierre del programa
 void sigintHandler(int sig_num){
-    signal(sig_num, sigintHandler);
+    // signal(sig_num, sigintHandler);
 		char option;
     printf("\n Deseas finalizar el programa? [s/n]");
 		fflush(stdout);
-		scanf("%c\n", &option );
+		// scanf("%c\n", &option );
+		option = getchar();
     if (option=='s'){
 			ending_server = true;
+			if (fclose(output_file) != 0) {
+				perror("Error al cerrar el archivo");
+			}
+			while (true){
+				printf("Saliendo\n");
+				exit(0);
+			}
+		} else {
+			printf("No salgo\n");
 		}
+}
 
+bool verify_alarm_need(char* buffer) {
+	printf("BUFFER a comparar: %s|\n", buffer);
+	char alert_needed[][BUFSIZE] = {"empty\n", "Printer Error\n"};
+	for (int i = 0; i < 2; i++) {
+		if (strncmp(alert_needed[i], buffer, BUFSIZE) == 0) {
+			printf("Encontre\n");
+			return true;
+		}
+	}
+	printf("No Encontre\n");
+	return false;
 }

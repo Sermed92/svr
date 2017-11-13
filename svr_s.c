@@ -1,7 +1,6 @@
 /*
     C socket server example
 */
-#include <sys/socket.h>
 #include "utilities.h"
 
 int main(int argc , char *argv[]){
@@ -92,6 +91,11 @@ int main(int argc , char *argv[]){
       if (ending_server) {
         break;
       }
+
+      if (verify_alarm_need(report_message) == true) {
+        printf("ALARMA MAMA, SE QUEMA LA COCINA\n");
+      }
+
       //Send the message back to client
       write(client_sock, "200\0", strlen("200\0"));
       //printf("Received from %d\n",client_sock);

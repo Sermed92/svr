@@ -10,6 +10,8 @@
 	#include <unistd.h>		//write
 	#include <errno.h>
 	#include <signal.h>
+	#include <sys/socket.h>
+
 
 	// Declaracion de mensajes base
 	#define BUFSIZE 2048
@@ -26,6 +28,7 @@
 	void argc_verify_s(int);
 	FILE *output_ready(char*);
 	void sigintHandler(int);
+	bool verify_alarm_need(char*);
 
 #else
 #endif
