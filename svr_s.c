@@ -97,7 +97,7 @@ int main(int argc , char *argv[]){
       //printf("Received from %d\n",client_sock);
       fflush(stdout);
 
-      fprintf(output_file,"%s\n" ,report_message);
+      fprintf(output_file,"%s" ,report_message);
       memset(report_message,'\0',BUFSIZE);
       ++i;
     }
