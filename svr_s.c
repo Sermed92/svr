@@ -87,9 +87,11 @@ int main(int argc , char *argv[]){
     i=1;
     while((read_size = recv(client_sock, report_message, BUFSIZE, 0)) > 0){
         //Send the message back to client
-        write(client_sock, report_message, strlen(report_message));
-        printf("Message %d\n",i);
+        write(client_sock, "200\0", strlen("200\0"));
+        //printf("Received from %d\n",client_sock);
         fflush(stdout);
+        printf("%s\n",report_message );
+        fprintf(output_file, "Aqui deberia salir un mensaje %s\n" ,report_message);
         memset(report_message,'\0',BUFSIZE);
         i++;
     }
