@@ -11,6 +11,7 @@
 	#include <errno.h>
 	#include <signal.h>
 	#include <sys/socket.h>
+	#include <time.h>
 
 
 	// Declaracion de mensajes base

@@ -22,7 +22,7 @@ FILE *output_ready(char* f_name){
 	}
 	else {
 		//printf("Salida: %s\n", arr[opts]);
-		fprintf(output_file, "\n\n\n------------Nueva bitacora------------\n");
+		fprintf(output_file, "\n\n------------Nueva bitacora------------\n");
 		return output_file;
 	}
 }
