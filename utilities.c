@@ -85,7 +85,7 @@ void *connection_handler(void *socket_desc) {
 		}
 
 		if (verify_alarm_need(report_message)) {
-			printf("ALARMA MAMA, SE QUEMA LA COCINA\n");
+			email_alarm(report_message);
 		}
 
 		write(socket, "Accepted\0", strlen("Accepted\0"));

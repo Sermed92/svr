@@ -12,8 +12,9 @@
 	#include <signal.h>
 	#include <time.h>
 	#include <pthread.h>
-	#include <semaphore.h>
 	#include <getopt.h>
+	#include <semaphore.h>
+
 	// Declaracion de mensajes base
 	#define BUFSIZE 2048
 	#define  SEPARATOR "\n"

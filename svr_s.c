@@ -42,7 +42,7 @@ int main(int argc , char *argv[]){
     output_file = output_ready(f_name);
 
     // time_t current_time;
-    int socket_desc, c, client_sock, read_size, *new_socket;
+    int socket_desc, c, client_sock, *new_socket;
     struct sockaddr_in server;
     struct sockaddr_in client;
     char report_message[BUFSIZE];
@@ -122,12 +122,12 @@ int main(int argc , char *argv[]){
       perror("Error al cerrar el archivo");
     }
 
-    if(read_size == 0){
-        puts("Client disconnected");
-        fflush(stdout);
-    } else if(read_size == -1){
-        perror("recv failed");
-    }
+    // if(read_size == 0){
+    //     puts("Client disconnected");
+    //     fflush(stdout);
+    // } else if(read_size == -1){
+    //     perror("recv failed");
+    // }
 
     return 0;
 }
