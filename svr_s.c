@@ -92,42 +92,12 @@ int main(int argc , char *argv[]){
       return 1;
     }
 
-    printf("Handling thread created\n");
-
-    //Receive a message from client
-    // i=1;
-    // while((read_size = recv(client_sock, report_message, BUFSIZE, 0)) > 0){
-    //
-    //   if (ending_server) {
-    //     break;
-    //   }
-    //
-    //   if (verify_alarm_need(report_message) == true) {
-    //     printf("ALARMA MAMA, SE QUEMA LA COCINA\n");
-    //   }
-    //
-    //   //Send the message back to client
-    //   write(client_sock, "200\0", strlen("200\0"));
-    //   //printf("Received from %d\n",client_sock);
-    //   fflush(stdout);
-    //
-    //   current_time = time(NULL);
-    //   fprintf(output_file, "%s:%s", ctime(&current_time), report_message);
-    //   memset(report_message,'\0',BUFSIZE);
-    //   ++i;
-    // }
+      printf("Handling thread created\n");
     }
 
     if (fclose(output_file) != 0){
       perror("Error al cerrar el archivo");
     }
-
-    // if(read_size == 0){
-    //     puts("Client disconnected");
-    //     fflush(stdout);
-    // } else if(read_size == -1){
-    //     perror("recv failed");
-    // }
 
     return 0;
 }

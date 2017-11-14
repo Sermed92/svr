@@ -109,6 +109,7 @@ void *connection_handler(void *socket_desc) {
 		}
 
 		fprintf(output_file, "%s:%s", time_buffer, report_message);
+		printf("%s:%s", time_buffer, report_message);
 
 		memset(report_message, '\0', BUFSIZE);
 
@@ -117,9 +118,16 @@ void *connection_handler(void *socket_desc) {
 		//Salida del area de escritura en archivo
 	}
 
+	if(read_size == 0){
+	    puts("Client disconnected");
+	    fflush(stdout);
+	} else if(read_size == -1){
+	    perror("recv failed");
+	}
+
 	return 0;
 }
 
 void email_alarm(char * report) {
-	printf("Alarmaaaa %s\n", report );
+	printf("Alarmaaaa %s", report );
 }
