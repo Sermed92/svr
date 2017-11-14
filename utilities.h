@@ -13,6 +13,7 @@
 	#include <sys/socket.h>
 	#include <time.h>
 	#include <pthread.h>
+	#include <semaphore.h>
 
 
 	// Declaracion de mensajes base
@@ -24,6 +25,8 @@
 	FILE *output_file;
 	char* f_name;
 	bool ending_server;
+
+	sem_t semaphore;
 
 
 	// Funciones a utilizar

@@ -22,7 +22,7 @@ FILE *output_ready(char* f_name){
 	}
 	else {
 		//printf("Salida: %s\n", arr[opts]);
-		fprintf(output_file, "\n\n------------Nueva bitacora------------\n");
+		fprintf(output_file, "\n------------Nueva bitacora------------\n");
 		return output_file;
 	}
 }
@@ -69,7 +69,7 @@ void *connection_handler(void *socket_desc) {
 	char report_message[BUFSIZE];
 	while((read_size = recv(socket, report_message, BUFSIZE, 0)) > 0){
 		if (ending_server) {
-			return;
+			return 0;
 		}
 
 		if (verify_alarm_need(report_message)) {
@@ -79,7 +79,18 @@ void *connection_handler(void *socket_desc) {
 		write(socket, "Accepted\0", strlen("Accepted\0"));
 		fflush(stdout);
 
+		//Escribir en bitacora
+		//Controlar con semaforo
+
+		sem_wait(&semaphore);
+
 		fprintf(output_file, "%s", report_message);
 		memset(report_message, '\0', BUFSIZE);
+
+		sem_post(&semaphore);
+
+		//Salida del area de escritura en archivo
 	}
+
+	return 0;
 }
