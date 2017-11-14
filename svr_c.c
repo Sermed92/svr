@@ -6,7 +6,8 @@
 int main(int argc , char *argv[])
 {
 
-    //argc_verify_c(argc);
+    // ./svr_c -d 127.0.0.1 -p 21259
+    argc_verify_c(argc);
 
     int sock;
     struct sockaddr_in server;

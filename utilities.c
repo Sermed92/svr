@@ -74,6 +74,6 @@ bool verify_alarm_need(char* buffer) {
 	return false;
 }
 
-void email_alarm(char* report){
-	printf("ALARMA: %s\n", report);	
+void email_alarm(char * report) {
+	printf("Alarmaaaa %s\n", report );
 }

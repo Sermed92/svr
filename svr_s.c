@@ -5,6 +5,7 @@
 
 int main(int argc , char *argv[]){
 
+    // ./svr_s -l 21259 -b bitacora
     argc_verify_s(argc);
     // Se previene la interrupcion CTRL+C
     signal(SIGINT, sigintHandler);
@@ -90,12 +91,11 @@ int main(int argc , char *argv[]){
       }
 
       if (verify_alarm_need(report_message) == true) {
-        email_alarm(report_message);
+        email_alarm(report_message); 
       }
 
       //Send the message back to client
       write(client_sock, "200\0", strlen("200\0"));
-      //printf("Received from %d\n",client_sock);
       fflush(stdout);
 
       current_time = time(NULL);

@@ -17,6 +17,7 @@
 
 	// Declaracion de mensajes base
 	#define BUFSIZE 2048
+	#define  SEPARATOR "\n"
 
 	extern const char *FILE_OPEN_FAIL;
 
@@ -33,7 +34,7 @@
 	FILE *output_ready(char*);
 	void sigintHandler(int);
 	bool verify_alarm_need(char*);
-	void email_alarm(char*);
+	void email_alarm(char *);
 
 #else
 #endif
