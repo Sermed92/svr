@@ -32,7 +32,6 @@ FILE *output_ready(char* f_name){
 	}
 	else {
 		//printf("Salida: %s\n", arr[opts]);
-		fprintf(output_file, "\n------------Nueva bitacora------------\n");
 		return output_file;
 	}
 }
@@ -47,9 +46,6 @@ void sigintHandler(int sig_num){
 
     if (option=='s'){
 		ending_server = true;
-		if (fclose(output_file) != 0) {
-			perror("Error al cerrar el archivo");
-		}
 		while (true){
 			printf("Saliendo\n");
 			exit(0);
@@ -60,7 +56,7 @@ void sigintHandler(int sig_num){
 }
 
 // Se decide si es necesario que se envie una alarma
-bool verify_alarm_need(char* buffer) {
+int get_message_code(char* buffer) {
 	char alert_needed[][BUFSIZE] = {"empty\n", "Printer Error\n", "Communication Offline\n",
 		"Communication error\n", "Low Cash alert\n", "Running Out of notes in cassette\n",
 		"Service mode entered\n", "Service mode left\n", "device did not answer as expected\n",
@@ -69,27 +65,32 @@ bool verify_alarm_need(char* buffer) {
 
 	for (int i = 0; i < 12; i++) {
 		if (strncmp(alert_needed[i], buffer, BUFSIZE) == 0) {
-			return true;
+			return (i+1);
 		}
 	}
-	return false;
+	return 0;
 }
 
 void *connection_handler(void *socket_desc) {
 	int socket = *(int*) socket_desc;
 	int read_size;
+	int message_code = -1;
 	char report_message[BUFSIZE];
 	time_t current_time;
 	struct tm * time_struct;
 	char time_buffer[50];
+	pthread_t self;
+	self = pthread_self();
+	int tid = (-1)*(int) self;
 
 	while((read_size = recv(socket, report_message, BUFSIZE, 0)) > 0){
+
 		if (ending_server) {
 			return 0;
 		}
-
-		if (verify_alarm_need(report_message)) {
-			email_alarm(report_message);
+		message_code = get_message_code(report_message);
+		if (message_code != 0) {
+			email_alarm(report_message, message_code);
 		}
 
 		write(socket, "Accepted\0", strlen("Accepted\0"));
@@ -103,13 +104,19 @@ void *connection_handler(void *socket_desc) {
 
 		sem_wait(&semaphore);
 
+		output_file = output_ready(f_name);
+
 		if(strftime(time_buffer, 50, "%d.%m.%Y", time_struct) == 0) {
 			perror("Could not prepare string for time");
 			return NULL;
 		}
 
-		fprintf(output_file, "%s:%s", time_buffer, report_message);
-		printf("%s:%s", time_buffer, report_message);
+		fprintf(output_file, "%d:%s:%d %s",tid, time_buffer,message_code, report_message);
+		printf("%d:%s:%d %s",tid, time_buffer,message_code, report_message);
+
+		if (fclose(output_file) != 0){
+      perror("Error al cerrar el archivo");
+    }
 
 		memset(report_message, '\0', BUFSIZE);
 
@@ -128,6 +135,6 @@ void *connection_handler(void *socket_desc) {
 	return 0;
 }
 
-void email_alarm(char * report) {
-	printf("Alarmaaaa %s", report );
+void email_alarm(char * report, int code) {
+	printf("ALARMA! Reporte (%d) detectado: ", code);
 }

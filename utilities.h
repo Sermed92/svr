@@ -35,8 +35,8 @@
 	void argc_verify_c(int);
 	FILE *output_ready(char*);
 	void sigintHandler(int);
-	bool verify_alarm_need(char*);
+	int get_message_code(char*);
 	void *connection_handler(void*);
-	void email_alarm(char *);
+	void email_alarm(char *, int);
 #else
 #endif

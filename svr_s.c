@@ -39,8 +39,6 @@ int main(int argc , char *argv[]){
         }
     }
 
-    output_file = output_ready(f_name);
-
     // time_t current_time;
     int socket_desc, c, client_sock, *new_socket;
     struct sockaddr_in server;
@@ -79,24 +77,21 @@ int main(int argc , char *argv[]){
     c = sizeof(struct sockaddr_in);
 
     //accept connection from an incoming client (aqui es donde sucede la magia con el cliente)
-    while ((client_sock = accept(socket_desc, (struct sockaddr *)&client, (socklen_t*)&c))
-            && connection_counter < 1000){
-    printf("Connection accepted from device %d\n", connection_counter);
+    while ((client_sock = accept(socket_desc, (struct sockaddr *)&client, (socklen_t*)&c))){
+    if (connection_counter < 3) {
+      printf("Connection accepted from device %d\n", connection_counter);
+      pthread_t sniffer_thread;
+      new_socket = malloc(1);
+      *new_socket = client_sock;
 
-    pthread_t sniffer_thread;
-    new_socket = malloc(1);
-    *new_socket = client_sock;
+      if(pthread_create(&sniffer_thread, NULL, connection_handler, (void*)new_socket)) {
+        perror("Could not create thread");
+        return 1;
+      }
 
-    if(pthread_create(&sniffer_thread, NULL, connection_handler, (void*)new_socket)) {
-      perror("Could not create thread");
-      return 1;
-    }
-
-      printf("Handling thread created\n");
-    }
-
-    if (fclose(output_file) != 0){
-      perror("Error al cerrar el archivo");
+        printf("Handling thread created\n");
+        connection_counter++;
+      }
     }
 
     return 0;
