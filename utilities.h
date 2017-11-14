@@ -10,11 +10,9 @@
 	#include <unistd.h>		//write
 	#include <errno.h>
 	#include <signal.h>
-	#include <sys/socket.h>
 	#include <time.h>
 	#include <pthread.h>
 	#include <semaphore.h>
-
 
 	// Declaracion de mensajes base
 	#define BUFSIZE 2048
@@ -27,7 +25,6 @@
 	bool ending_server;
 
 	sem_t semaphore;
-
 
 	// Funciones a utilizar
 	void argc_verify_s(int);
