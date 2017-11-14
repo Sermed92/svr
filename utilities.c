@@ -79,6 +79,10 @@ void *connection_handler(void *socket_desc) {
 	int socket = *(int*) socket_desc;
 	int read_size;
 	char report_message[BUFSIZE];
+	time_t current_time;
+	struct tm * time_struct;
+	char time_buffer[50];
+
 	while((read_size = recv(socket, report_message, BUFSIZE, 0)) > 0){
 		if (ending_server) {
 			return 0;
@@ -91,12 +95,21 @@ void *connection_handler(void *socket_desc) {
 		write(socket, "Accepted\0", strlen("Accepted\0"));
 		fflush(stdout);
 
+		time(&current_time);
+		time_struct = localtime( &current_time);
+
 		//Escribir en bitacora
 		//Controlar con semaforo
 
 		sem_wait(&semaphore);
 
-		fprintf(output_file, "%s", report_message);
+		if(strftime(time_buffer, 50, "%d.%m.%Y", time_struct) == 0) {
+			perror("Could not prepare string for time");
+			return NULL;
+		}
+
+		fprintf(output_file, "%s:%s", time_buffer, report_message);
+
 		memset(report_message, '\0', BUFSIZE);
 
 		sem_post(&semaphore);
