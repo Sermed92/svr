@@ -19,7 +19,7 @@
 	// Declaracion de mensajes base
 	#define BUFSIZE 2048
 	#define  SEPARATOR "\n"
-
+	#define MAX_CONNECTIONS 1000
 	extern const char *FILE_OPEN_FAIL;
 
 	typedef enum { false, true } bool;
@@ -27,8 +27,8 @@
 	FILE *output_file;
 	char* f_name;
 	bool ending_server;
-
 	sem_t semaphore;
+	int connection_counter;
 
 	// Funciones a utilizar
 	void argc_verify_s(int);

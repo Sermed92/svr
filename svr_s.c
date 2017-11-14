@@ -45,7 +45,6 @@ int main(int argc , char *argv[]){
     struct sockaddr_in client;
     char report_message[BUFSIZE];
     memset(report_message,'\0',BUFSIZE);
-    int connection_counter = 0;
 
     // Se crea el socket
     if ((socket_desc = socket(AF_INET, SOCK_STREAM, 0)) == -1){
@@ -66,7 +65,7 @@ int main(int argc , char *argv[]){
     }
 
     //Listen
-    listen(socket_desc , 3);
+    listen(socket_desc , MAX_CONNECTIONS);
 
     if(sem_init(&semaphore, 0, 1) != 0) {
       perror("Semaphore initialization failed\n");
@@ -75,10 +74,11 @@ int main(int argc , char *argv[]){
     //Accept and incoming connection
     puts("Waiting for incoming connections...");
     c = sizeof(struct sockaddr_in);
+    connection_counter = 0;
 
     //accept connection from an incoming client (aqui es donde sucede la magia con el cliente)
     while ((client_sock = accept(socket_desc, (struct sockaddr *)&client, (socklen_t*)&c))){
-    if (connection_counter < 3) {
+    if (connection_counter < MAX_CONNECTIONS) {
       printf("Connection accepted from device %d\n", connection_counter);
       pthread_t sniffer_thread;
       new_socket = malloc(1);
@@ -91,6 +91,10 @@ int main(int argc , char *argv[]){
 
         printf("Handling thread created\n");
         connection_counter++;
+      } else {
+        // Se le dice al cliente que cierre
+        connection_counter--;
+        close(client_sock);
       }
     }
 

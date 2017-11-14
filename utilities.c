@@ -115,8 +115,8 @@ void *connection_handler(void *socket_desc) {
 		printf("%d:%s:%d %s",tid, time_buffer,message_code, report_message);
 
 		if (fclose(output_file) != 0){
-      perror("Error al cerrar el archivo");
-    }
+			perror("Error al cerrar el archivo");
+		}
 
 		memset(report_message, '\0', BUFSIZE);
 
@@ -127,6 +127,7 @@ void *connection_handler(void *socket_desc) {
 
 	if(read_size == 0){
 	    puts("Client disconnected");
+	    connection_counter--;
 	    fflush(stdout);
 	} else if(read_size == -1){
 	    perror("recv failed");
