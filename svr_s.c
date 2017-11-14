@@ -90,7 +90,7 @@ int main(int argc , char *argv[]){
       }
 
       if (verify_alarm_need(report_message) == true) {
-        printf("ALARMA MAMA, SE QUEMA LA COCINA\n");
+        email_alarm(report_message);
       }
 
       //Send the message back to client
@@ -99,9 +99,7 @@ int main(int argc , char *argv[]){
       fflush(stdout);
 
       current_time = time(NULL);
-      fprintf(output_file, "%s", ctime(&current_time));
-
-      fprintf(output_file,"%s" ,report_message);
+      fprintf(output_file, "%s:%s", ctime(&current_time), report_message);
       memset(report_message,'\0',BUFSIZE);
       ++i;
     }

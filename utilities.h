@@ -12,12 +12,14 @@
 	#include <signal.h>
 	#include <sys/socket.h>
 	#include <time.h>
+	#include <getopt.h>
 
 
 	// Declaracion de mensajes base
 	#define BUFSIZE 2048
 
 	extern const char *FILE_OPEN_FAIL;
+
 	typedef enum { false, true } bool;
 	// Archivo de salida
 	FILE *output_file;
@@ -27,9 +29,11 @@
 
 	// Funciones a utilizar
 	void argc_verify_s(int);
+	void argc_verify_c(int);
 	FILE *output_ready(char*);
 	void sigintHandler(int);
 	bool verify_alarm_need(char*);
+	void email_alarm(char*);
 
 #else
 #endif
