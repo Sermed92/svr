@@ -14,6 +14,7 @@
 	#include <pthread.h>
 	#include <getopt.h>
 	#include <semaphore.h>
+	#include <ctype.h>
 
 	// Declaracion de mensajes base
 	#define BUFSIZE 2048
