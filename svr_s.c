@@ -5,6 +5,7 @@
 
 int main(int argc , char *argv[]){
 
+    // ./svr_s -l 21259 -b bitacora
     argc_verify_s(argc);
     // Se previene la interrupcion CTRL+C
     signal(SIGINT, sigintHandler);
@@ -111,9 +112,7 @@ int main(int argc , char *argv[]){
     //   fflush(stdout);
     //
     //   current_time = time(NULL);
-    //   fprintf(output_file, "%s", ctime(&current_time));
-    //
-    //   fprintf(output_file,"%s" ,report_message);
+    //   fprintf(output_file, "%s:%s", ctime(&current_time), report_message);
     //   memset(report_message,'\0',BUFSIZE);
     //   ++i;
     // }
