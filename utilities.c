@@ -49,6 +49,7 @@ void sigintHandler(int sig_num){
 		}
 }
 
+// Se decide si es necesario que se envie una alarma
 bool verify_alarm_need(char* buffer) {
 	printf("BUFFER a comparar: %s|\n", buffer);
 	char alert_needed[][BUFSIZE] = {"empty\n", "Printer Error\n"};
@@ -60,4 +61,25 @@ bool verify_alarm_need(char* buffer) {
 	}
 	printf("No Encontre\n");
 	return false;
+}
+
+void *connection_handler(void *socket_desc) {
+	int socket = *(int*) socket_desc;
+	int read_size;
+	char report_message[BUFSIZE];
+	while((read_size = recv(socket, report_message, BUFSIZE, 0)) > 0){
+		if (ending_server) {
+			return;
+		}
+
+		if (verify_alarm_need(report_message)) {
+			printf("ALARMA MAMA, SE QUEMA LA COCINA\n");
+		}
+
+		write(socket, "Accepted\0", strlen("Accepted\0"));
+		fflush(stdout);
+
+		fprintf(output_file, "%s", report_message);
+		memset(report_message, '\0', BUFSIZE);
+	}
 }

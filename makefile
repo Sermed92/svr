@@ -7,7 +7,7 @@ svr_c.o: svr_c.c
 	gcc -c svr_c.c
 
 svr_s: svr_s.o utilities.o utilities.h
-	gcc -Wall -Wextra -g -o svr_s svr_s.o utilities.o
+	gcc -pthread -Wall -Wextra -g -o svr_s svr_s.o utilities.o
 
 svr_s.o: svr_s.c utilities.h
 	gcc -Wall -Wextra -g -c svr_s.c

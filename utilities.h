@@ -12,6 +12,7 @@
 	#include <signal.h>
 	#include <sys/socket.h>
 	#include <time.h>
+	#include <pthread.h>
 
 
 	// Declaracion de mensajes base
@@ -30,6 +31,7 @@
 	FILE *output_ready(char*);
 	void sigintHandler(int);
 	bool verify_alarm_need(char*);
+	void *connection_handler(void*);
 
 #else
 #endif
