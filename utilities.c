@@ -131,6 +131,7 @@ void *connection_handler(void *socket_desc) {
 	    fflush(stdout);
 	} else if(read_size == -1){
 	    perror("recv failed");
+	    connection_counter--;
 	}
 
 	return 0;
@@ -138,4 +139,17 @@ void *connection_handler(void *socket_desc) {
 
 void email_alarm(char * report, int code) {
 	printf("ALARMA! Reporte (%d) detectado: ", code);
+	char cmd[100];  			// to hold the command.
+	char to[] = "sermed19@gmail.com"; 	// email id of the recepient.
+	char body[BUFSIZE];	    		// email body.
+	char tempFile[] = "alarm-email";     		// name of tempfile.
+
+	strcpy(body,report);
+
+	FILE *fp = fopen(tempFile,"w");	// open it for writing.
+	fprintf(fp,"%s\n",body);	// write body to it.
+	fclose(fp);             	// close it.
+
+	sprintf(cmd,"mail %s < %s",to,tempFile); // prepare command.
+	system(cmd);
 }

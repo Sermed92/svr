@@ -3,8 +3,7 @@
 */
 #include "utilities.h"
 
-int main(int argc , char *argv[])
-{
+int main(int argc , char *argv[]){
 
     // ./svr_c -d 127.0.0.1 -p 21259
     argc_verify_c(argc);
