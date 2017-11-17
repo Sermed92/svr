@@ -8,11 +8,24 @@ int main(int argc , char *argv[]){
     // ./svr_c -d 127.0.0.1 -p 21259
     argc_verify_c(argc);
 
+    //Set self atm id
+    srand(time(NULL));
+    int self_id = rand();
+    if (self_id < 0) {
+      self_id = self_id * -1;
+    }
+
     int sock;
+    int message_code;
     struct sockaddr_in server;
     char message[BUFSIZE];
+    time_t current_time;
+    struct tm * time_struct;
+    char time_buffer[50];
+    char buffer_to_send[BUFSIZE];
 
     memset(message,'\0', BUFSIZE);
+    memset(buffer_to_send, '\0', BUFSIZE);
 
     //Create socket
     if ((sock = socket(AF_INET , SOCK_STREAM , 0)) == -1){
@@ -75,8 +88,21 @@ int main(int argc , char *argv[]){
         printf("Send Report: ");
         fgets(message, BUFSIZE, stdin);
 
+        message_code = get_message_code(message);
+
+        //Get current time
+        time(&current_time);
+        time_struct = localtime(&current_time);
+
+        if(strftime(time_buffer, 50, "%H.%M.%S:%d.%m.%Y", time_struct) == 0) {
+          perror("Error! Could not prepare time string");
+          return 0;
+        }
+
+        sprintf(buffer_to_send, "ATM-ID:%d|%s|Cod:%d|Mes:%s", self_id, time_buffer, message_code, message);
+
         //Send some data
-        if(send(sock, message, BUFSIZE, 0) < 0){
+        if(send(sock, buffer_to_send, BUFSIZE, 0) < 0){
             puts("Send failed");
             return 1;
         }
@@ -90,6 +116,8 @@ int main(int argc , char *argv[]){
 
         //puts(server_reply);
         memset(message,'\0', BUFSIZE);
+        memset(buffer_to_send, '\0', BUFSIZE);
+        memset(time_buffer, '\0', 50);
     }
 
     close(sock);

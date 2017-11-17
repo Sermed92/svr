@@ -76,9 +76,9 @@ void *connection_handler(void *socket_desc) {
 	int read_size;
 	int message_code = -1;
 	char report_message[BUFSIZE];
-	time_t current_time;
-	struct tm * time_struct;
-	char time_buffer[50];
+	// time_t current_time;
+	// struct tm * time_struct;
+	// char time_buffer[50];
 	pthread_t self;
 	self = pthread_self();
 	int tid = (-1)*(int) self;
@@ -96,8 +96,8 @@ void *connection_handler(void *socket_desc) {
 		write(socket, "Accepted\0", strlen("Accepted\0"));
 		fflush(stdout);
 
-		time(&current_time);
-		time_struct = localtime( &current_time);
+		// time(&current_time);
+		// time_struct = localtime( &current_time);
 
 		//Escribir en bitacora
 		//Controlar con semaforo
@@ -106,13 +106,13 @@ void *connection_handler(void *socket_desc) {
 
 		output_file = output_ready(f_name);
 
-		if(strftime(time_buffer, 50, "%d.%m.%Y", time_struct) == 0) {
-			perror("Could not prepare string for time");
-			return NULL;
-		}
+		// if(strftime(time_buffer, 50, "%d.%m.%Y", time_struct) == 0) {
+		// 	perror("Could not prepare string for time");
+		// 	return NULL;
+		// }
 
-		fprintf(output_file, "%d:%s:%d %s",tid, time_buffer,message_code, report_message);
-		printf("%d:%s:%d %s",tid, time_buffer,message_code, report_message);
+		fprintf(output_file, "%s", report_message);
+		printf("%s", report_message);
 
 		if (fclose(output_file) != 0){
 			perror("Error al cerrar el archivo");
