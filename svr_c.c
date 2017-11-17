@@ -63,7 +63,6 @@ int main(int argc , char *argv[]){
             break;
             case 'l':
                 lflag = 1;
-                server.sin_port = htons(atoi(optarg));
             break;
             case '?':
                 if (optopt == 'd' || optopt == 'p' || optopt == 'l') {
