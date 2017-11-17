@@ -1,11 +1,18 @@
-/*
-    C ECHO client example using sockets
+/*  svr_c.c
+*   Implementacion del ATM (cliente)
+*   Autores:
+*   Sergio Medina 09-11259
+*   Lucio Mederos 13-10856
 */
 #include "utilities.h"
-
+/* 
+*   Funcion unica para el funcionamiento del cliente
+*   Ejemplo de llamada:
+*   ./svr_c -d 127.0.0.1 -p 20856
+*/
 int main(int argc , char *argv[]){
 
-    // ./svr_c -d 127.0.0.1 -p 21259
+    // Se verifica la cantidad de argumentos
     argc_verify_c(argc);
 
     //Set self atm id
@@ -24,20 +31,20 @@ int main(int argc , char *argv[]){
     char time_buffer[50];
     char buffer_to_send[BUFSIZE];
 
+    // se inicializan los buffers, para que esten limpios
     memset(message,'\0', BUFSIZE);
     memset(buffer_to_send, '\0', BUFSIZE);
 
-    //Create socket
+    // Creacion del socket a usar, protocolo tcp == SOCK_STREAM
     if ((sock = socket(AF_INET , SOCK_STREAM , 0)) == -1){
         printf("Could not create socket");
     }
     puts("Socket created");
 
-    //server.sin_addr.s_addr = inet_addr("127.0.0.1");
+    // Se prepara el servidor
     server.sin_family = AF_INET;
-    //server.sin_port = htons( 20856 );
-
     int value;
+    // flags indican que opcines se tomaron
     int dflag = 0;
     int pflag = 0;
     int lflag = 0;
@@ -46,10 +53,12 @@ int main(int argc , char *argv[]){
         switch (value) {
             case 'd':
                 dflag = 1;
+                // se agina la direccion
                 server.sin_addr.s_addr = inet_addr(optarg);
             break;
             case 'p':
                 pflag = 1;
+                // se asigna el puerto
                 server.sin_port = htons(atoi(optarg));
             break;
             case 'l':
@@ -70,12 +79,13 @@ int main(int argc , char *argv[]){
         }
     }
 
+    // si se escoge la opcion -l pero no -d o -p se termina la ejecucion
     if ((lflag == 1) && (dflag != 1 || pflag != 1)){
         printf("Opciones -d y -p son mandatorias\n");
         exit(1);
     }
 
-    //Connect to remote server
+    // Conectamos con el servidor
     if (connect(sock , (struct sockaddr *)&server , sizeof(server)) < 0){
         perror("connect failed. Error");
         return 1;
@@ -83,38 +93,44 @@ int main(int argc , char *argv[]){
 
     puts("Connected\n");
 
-    //keep communicating with server
+    // En constante comunicacion con el servidor
+    // Mientras no se cierre el cliente
     while(1){
-        printf("Send Report: ");
-        fgets(message, BUFSIZE, stdin);
 
+        printf("Send Report: ");
+        // se obtiene el reporte a enviar
+        fgets(message, BUFSIZE, stdin);
+        // se obtiene el codigo referente al reporte
         message_code = get_message_code(message);
 
         //Get current time
         time(&current_time);
         time_struct = localtime(&current_time);
-
+        // se le asigna un formato al 'tiempo' actual
         if(strftime(time_buffer, 50, "%H.%M.%S:%d.%m.%Y", time_struct) == 0) {
           perror("Error! Could not prepare time string");
           return 0;
         }
 
+        // se prepara el buffer a ser enviado al servidro
         sprintf(buffer_to_send, "ATM-ID:%d|%s|Cod:%d|Mes: %s", self_id, time_buffer, message_code, message);
 
-        //Send some data
+        // Envio de datos al servidor
         if(send(sock, buffer_to_send, BUFSIZE, 0) < 0){
             puts("Send failed");
             return 1;
         }
+        // se limpia el buffer
         memset(message,'\0', BUFSIZE);
 
-        //Receive a reply from the server
+        // Recibe una respuesta del servidor
         if( recv(sock, message, BUFSIZE, 0) < 0){
+            // La respuesta no se recibio
             puts("recv failed");
             break;
         }
 
-        //puts(server_reply);
+        // Se limpian los buffer usados
         memset(message,'\0', BUFSIZE);
         memset(buffer_to_send, '\0', BUFSIZE);
         memset(time_buffer, '\0', 50);

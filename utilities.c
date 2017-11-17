@@ -1,3 +1,9 @@
+/*	utilities.c
+*	Archivo con la implementacion de funciones requeridas
+*	Autores:
+*	Sergio Medina 09-11259
+*	Lucio Mederos 13-10856
+*/
 #include "utilities.h"
 
 // Definicion de mensajes base
@@ -6,14 +12,14 @@ const char *WRONG_ARGUMENT_S = "Error!\n Uso de svr_s:\n./svr_s -l <puerto_svr_s
 const char *WRONG_ARGUMENT_C = "Error!\n Uso de svr_c:\n./svr_c -d <nombre_modulo_central> -p <puerto_svr_s> [-l <puerto_local>]";
 
 
-// Se verifica la cantidad de argumentos recibida
+// Se verifica la cantidad de argumentos recibida para el servidor
 void argc_verify_s(int amount) {
 	if (amount != 5) {
 		printf("%s\n", WRONG_ARGUMENT_S);
 		exit(1);
 	}
 }
-
+// Se verifica la cantidad de argumentos recibida para el client
 void argc_verify_c(int amount) {
 	if (amount != 5) {
 		if (amount != 7){
@@ -31,12 +37,11 @@ FILE *output_ready(char* f_name){
 		exit(1);
 	}
 	else {
-		//printf("Salida: %s\n", arr[opts]);
 		return output_file;
 	}
 }
 
-// Manejador de señales para evitar el cierre del programa
+// Manejador de señales para evitar el cierre forzoso del programa
 void sigintHandler(int sig_num){
     signal(sig_num, sigintHandler);
 	char option;
@@ -45,18 +50,22 @@ void sigintHandler(int sig_num){
 	option = getchar();
 
     if (option=='s'){
+    	// se indico que se quiere terminar
 		ending_server = true;
 		while (true){
 			printf("Saliendo\n");
 			exit(0);
 		}
 	} else {
+		// no se quiere terminar
 		printf("No salgo\n");
 	}
 }
 
-// Se decide si es necesario que se envie una alarma
+// Si es necesario enviar una alarma, indica el codigo de la alarma
 int get_message_code(char* buffer) {
+	// arreglo con las alarmas que se deben detectar
+	// la posicion (+1) de cada mensaje es su codigo de alarma
 	char alert_needed[][BUFSIZE] = {"empty\n", "Printer Error\n", "Communication Offline\n",
 		"Communication error\n", "Low Cash alert\n", "Running Out of notes in cassette\n",
 		"Service mode entered\n", "Service mode left\n", "device did not answer as expected\n",
@@ -65,12 +74,15 @@ int get_message_code(char* buffer) {
 
 	for (int i = 0; i < 12; i++) {
 		if (strncmp(alert_needed[i], buffer, BUFSIZE) == 0) {
+			// Se detecto una alarma ==> se devuelve el codigo de alarma
 			return (i+1);
 		}
 	}
+	// si no se detecta alarma, el codigo de la operacion es 0, que significa success
 	return 0;
 }
 
+// Funcion llamada por cada hilo para atender varios clientes
 void *connection_handler(void *socket_desc) {
 	int socket = *(int*) socket_desc;
 	int read_size;
@@ -78,14 +90,17 @@ void *connection_handler(void *socket_desc) {
 	char report_message[BUFSIZE];
 
 	while((read_size = recv(socket, report_message, BUFSIZE, 0)) > 0){
-
+		// Se indico que se quiere cerrar el servidor (ctrl+c)
 		if (ending_server) {
 			return 0;
 		}
+
 		// Chequear si necesita enviar email de alarma
 		char * message = strchr(report_message, ' ')+1;
 		message_code = get_message_code(message);
 		if (message_code != 0) {
+			// Si el codigo de la transaccion no es 0 (success)
+			//se envia la alarma con su respectivo codigo
 			email_alarm(message, message_code);
 		}
 
@@ -93,8 +108,7 @@ void *connection_handler(void *socket_desc) {
 		fflush(stdout);
 
 		//Escribir en bitacora
-		//Controlar con semaforo
-
+		//Controlar con semaforo -- region critica
 		sem_wait(&semaphore);
 
 		output_file = output_ready(f_name);
@@ -107,10 +121,9 @@ void *connection_handler(void *socket_desc) {
 		}
 
 		sem_post(&semaphore);
+		//Salida de la region critica
 
-		//Salida del area de escritura en archivo
-
-
+		// Se limpia el buffer
 		memset(report_message, '\0', BUFSIZE);
 
 	}
@@ -129,18 +142,21 @@ void *connection_handler(void *socket_desc) {
 
 // Funcion para enviar un correo de alarma
 void email_alarm(char * report, int code) {
+	// se reporta la alarma en el log del server
 	printf("ALARMA! Reporte (%d) detectado: ", code);
-	char cmd[100];  			// to hold the command.
-	char to[] = "sermed19@gmail.com"; 	// email id of the recepient.
-	char body[BUFSIZE];	    		// email body.
-	char tempFile[] = "alarm-email";     		// name of tempfile.
-
+	char cmd[BUFSIZE];  					// comando a enviar al sistema
+	char to[] = "sermed19@gmail.com"; 		// email destinatario
+	char body[BUFSIZE];	    				// mensajea  enviar
+	char tempFile[] = "alarm-email";    	// nombre del mensaje a enviar
+	// se copia el reporte en el cuerpo del mensaje
 	strcpy(body,report);
 
+	// se abre el archivo para escribir, si ya existe lo reescribe desde el inicio
 	FILE *fp = fopen(tempFile,"w");	// open it for writing.
-	fprintf(fp,"%s\n",body);	// write body to it.
-	fclose(fp);             	// close it.
+	fprintf(fp,"%s\n",body);		
+	fclose(fp);             		
 
-	sprintf(cmd,"mail %s < %s",to,tempFile); // prepare command.
+	sprintf(cmd,"mail %s < %s",to,tempFile); // se crea el comando a ejecutar
+	// se usa la syscall "system" para usar el comando
 	system(cmd);
 }

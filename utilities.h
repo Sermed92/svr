@@ -1,3 +1,9 @@
+/*	utilities.h
+*	Archivo con la definicion de funciones requeridas
+*	Autores:
+*	Sergio Medina 09-11259
+*	Lucio Mederos 13-10856
+*/
 #ifndef utilities
 #define utilities
 
@@ -16,14 +22,15 @@
 	#include <semaphore.h>
 	#include <ctype.h>
 
-	// Declaracion de mensajes base
+	// Declaracion constantes
 	#define BUFSIZE 2048
 	#define  SEPARATOR "\n"
 	#define MAX_CONNECTIONS 1000
 	extern const char *FILE_OPEN_FAIL;
-
+	// tipo bool
 	typedef enum { false, true } bool;
-	// Archivo de salida
+
+	// Variables globales
 	FILE *output_file;
 	char* f_name;
 	bool ending_server;
