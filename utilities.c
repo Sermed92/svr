@@ -13,13 +13,18 @@ const char *WRONG_ARGUMENT_C = "Error!\n Uso de svr_c:\n./svr_c -d <nombre_modul
 
 
 // Se verifica la cantidad de argumentos recibida para el servidor
+// int amount: Cantidad de argumentos
+// Retorna: void
 void argc_verify_s(int amount) {
 	if (amount != 5) {
 		printf("%s\n", WRONG_ARGUMENT_S);
 		exit(1);
 	}
 }
-// Se verifica la cantidad de argumentos recibida para el client
+
+// Se verifica la cantidad de argumentos recibida para el cliente
+// int amount: Cantidad de argumentos
+// Retorna: void
 void argc_verify_c(int amount) {
 	if (amount != 5) {
 		if (amount != 7){
@@ -30,6 +35,8 @@ void argc_verify_c(int amount) {
 }
 
 // Se abre el archivo a usar como bitacora en modo append
+// char * f_name: Nombre del archivo a abrir
+// Retorna: File* Archivo abierto
 FILE *output_ready(char* f_name){
 
 	if ((output_file = fopen(f_name, "a")) == NULL) {
@@ -42,6 +49,8 @@ FILE *output_ready(char* f_name){
 }
 
 // Manejador de señales para evitar el cierre forzoso del programa
+// int sig_num: Argumento de la señal de interrupcion
+// Retorna: void
 void sigintHandler(int sig_num){
     signal(sig_num, sigintHandler);
 	char option;
@@ -63,6 +72,8 @@ void sigintHandler(int sig_num){
 }
 
 // Si es necesario enviar una alarma, indica el codigo de la alarma
+// char *buffer: mensaje recibido a ser revisado para obtener su codigo
+// Retorna: int Codigo correspondiente al mensaje recibido (0 si es un mensaje desconocido)
 int get_message_code(char* buffer) {
 	// arreglo con las alarmas que se deben detectar
 	// la posicion (+1) de cada mensaje es su codigo de alarma
@@ -83,6 +94,8 @@ int get_message_code(char* buffer) {
 }
 
 // Funcion llamada por cada hilo para atender varios clientes
+// void *socket_desc: Descriptor del socket correspondiente al hilo
+// Retorna: void
 void *connection_handler(void *socket_desc) {
 	int socket = *(int*) socket_desc;
 	int read_size;
@@ -141,7 +154,10 @@ void *connection_handler(void *socket_desc) {
 }
 
 // Funcion para enviar un correo de alarma
-void email_alarm(char * report, int code) {
+// char *report: Mensaje recibido a ser reenviado por email
+// int code: code de alarma
+// Retorna: void
+void email_alarm(char *report, int code) {
 	// se reporta la alarma en el log del server
 	printf("ALARMA! Reporte (%d) detectado: ", code);
 	char cmd[BUFSIZE];  					// comando a enviar al sistema
@@ -153,8 +169,8 @@ void email_alarm(char * report, int code) {
 
 	// se abre el archivo para escribir, si ya existe lo reescribe desde el inicio
 	FILE *fp = fopen(tempFile,"w");	// open it for writing.
-	fprintf(fp,"%s\n",body);		
-	fclose(fp);             		
+	fprintf(fp,"%s\n",body);
+	fclose(fp);
 
 	sprintf(cmd,"mail %s < %s",to,tempFile); // se crea el comando a ejecutar
 	// se usa la syscall "system" para usar el comando
