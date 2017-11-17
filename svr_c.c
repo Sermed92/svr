@@ -113,7 +113,7 @@ int main(int argc , char *argv[]){
         }
 
         // se prepara el buffer a ser enviado al servidro
-        sprintf(buffer_to_send, "ATM-ID:%d|%s|Cod:%d|Mes: %s", self_id, time_buffer, message_code, message);
+        sprintf(buffer_to_send, "ATM-ID:%d|%s|Cod:%d|Message: %s", self_id, time_buffer, message_code, message);
 
         // Envio de datos al servidor
         if(send(sock, buffer_to_send, BUFSIZE, 0) < 0){
