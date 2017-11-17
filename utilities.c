@@ -76,28 +76,21 @@ void *connection_handler(void *socket_desc) {
 	int read_size;
 	int message_code = -1;
 	char report_message[BUFSIZE];
-	// time_t current_time;
-	// struct tm * time_struct;
-	// char time_buffer[50];
-	pthread_t self;
-	self = pthread_self();
-	int tid = (-1)*(int) self;
 
 	while((read_size = recv(socket, report_message, BUFSIZE, 0)) > 0){
 
 		if (ending_server) {
 			return 0;
 		}
-		message_code = get_message_code(report_message);
+		// Chequear si necesita enviar email de alarma
+		char * message = strchr(report_message, ' ')+1;
+		message_code = get_message_code(message);
 		if (message_code != 0) {
-			email_alarm(report_message, message_code);
+			email_alarm(message, message_code);
 		}
 
 		write(socket, "Accepted\0", strlen("Accepted\0"));
 		fflush(stdout);
-
-		// time(&current_time);
-		// time_struct = localtime( &current_time);
 
 		//Escribir en bitacora
 		//Controlar con semaforo
@@ -106,11 +99,6 @@ void *connection_handler(void *socket_desc) {
 
 		output_file = output_ready(f_name);
 
-		// if(strftime(time_buffer, 50, "%d.%m.%Y", time_struct) == 0) {
-		// 	perror("Could not prepare string for time");
-		// 	return NULL;
-		// }
-
 		fprintf(output_file, "%s", report_message);
 		printf("%s", report_message);
 
@@ -118,11 +106,13 @@ void *connection_handler(void *socket_desc) {
 			perror("Error al cerrar el archivo");
 		}
 
-		memset(report_message, '\0', BUFSIZE);
-
 		sem_post(&semaphore);
 
 		//Salida del area de escritura en archivo
+
+
+		memset(report_message, '\0', BUFSIZE);
+
 	}
 
 	if(read_size == 0){
@@ -137,6 +127,7 @@ void *connection_handler(void *socket_desc) {
 	return 0;
 }
 
+// Funcion para enviar un correo de alarma
 void email_alarm(char * report, int code) {
 	printf("ALARMA! Reporte (%d) detectado: ", code);
 	char cmd[100];  			// to hold the command.

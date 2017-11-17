@@ -99,7 +99,7 @@ int main(int argc , char *argv[]){
           return 0;
         }
 
-        sprintf(buffer_to_send, "ATM-ID:%d|%s|Cod:%d|Mes:%s", self_id, time_buffer, message_code, message);
+        sprintf(buffer_to_send, "ATM-ID:%d|%s|Cod:%d|Mes: %s", self_id, time_buffer, message_code, message);
 
         //Send some data
         if(send(sock, buffer_to_send, BUFSIZE, 0) < 0){
