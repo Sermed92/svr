@@ -105,7 +105,10 @@ void *connection_handler(void *socket_desc) {
 	struct timeval tv;
 	tv.tv_sec = 5*60; // Timeout de 5 minutos
 	tv.tv_usec = 0;
-	setsockopt(socket, SOL_SOCKET, SO_RCVTIMEO, (struct timeval *)&tv, sizeof(struct timeval));
+	// Se usa la llamada al sistema setsockopt para establecer el timeout en el socket
+	if (setsockopt(socket, SOL_SOCKET, SO_RCVTIMEO, (struct timeval *)&tv, sizeof(struct timeval)) != 0) {
+		perror("Error al establecer timeout en socket");
+	}
 
 	while (1) {
 		while((read_size = recv(socket, report_message, BUFSIZE, 0)) > 0){
