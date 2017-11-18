@@ -156,6 +156,17 @@ void *connection_handler(void *socket_desc) {
 	    fflush(stdout);
 	} else if(read_size == -1){
 		printf("ALARMA! Cliente inactivo durante 5 minutos\n");
+		sem_wait(&semaphore);
+
+		output_file = output_ready(f_name);
+
+		fprintf(output_file, "ALARMA! Cliente inactivo durante 5 minutos\n");
+
+		if (fclose(output_file) != 0){
+			perror("Error al cerrar el archivo");
+		}
+
+		sem_post(&semaphore);
 		email_alarm("ALARMA! Cliente inactivo durante 5 minutos\n", 13);
 	}
 }
