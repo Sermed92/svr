@@ -21,6 +21,7 @@
 	#include <getopt.h>
 	#include <semaphore.h>
 	#include <ctype.h>
+	#include <sys/time.h>
 
 	// Declaracion constantes
 	#define BUFSIZE 2048

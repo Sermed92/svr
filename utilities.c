@@ -102,7 +102,13 @@ void *connection_handler(void *socket_desc) {
 	int message_code = -1;
 	char report_message[BUFSIZE];
 
-	while((read_size = recv(socket, report_message, BUFSIZE, 0)) > 0){
+	struct timeval tv;
+	tv.tv_sec = 5*60; // Timeout de 5 minutos
+	tv.tv_usec = 0;
+	setsockopt(socket, SOL_SOCKET, SO_RCVTIMEO, (struct timeval *)&tv, sizeof(struct timeval));
+
+	while (1) {
+		while((read_size = recv(socket, report_message, BUFSIZE, 0)) > 0){
 		// Se indico que se quiere cerrar el servidor (ctrl+c)
 		if (ending_server) {
 			return 0;
@@ -146,9 +152,10 @@ void *connection_handler(void *socket_desc) {
 	    connection_counter--;
 	    fflush(stdout);
 	} else if(read_size == -1){
-	    perror("recv failed");
-	    connection_counter--;
+		printf("ALARMA! Cliente inactivo durante 5 minutos\n");
+		email_alarm("ALARMA! Cliente inactivo durante 5 minutos\n", 13);
 	}
+}
 
 	return 0;
 }
