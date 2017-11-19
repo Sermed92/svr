@@ -154,6 +154,7 @@ void *connection_handler(void *socket_desc) {
 	    puts("Client disconnected");
 	    connection_counter--;
 	    fflush(stdout);
+			break;
 	} else if(read_size == -1){
 		printf("ALARMA! Cliente inactivo durante 5 minutos\n");
 		sem_wait(&semaphore);
